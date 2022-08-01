@@ -12,13 +12,15 @@ searchVideos = () => {
     config.access_token
   )
 
-  const pathDE = '/users/109239427/folders/3299245/videos?fields=uri' // Videos DE
-  const pathEN = '/users/109239427/folders/3410229/videos?fields=uri' // Videos EN
+  const user = '/users/109239427'
+  const pathDE = user + '/folders/3299245/videos?fields=uri' // Videos DE
+  const pathEN = user + '/folders/3410229/videos?fields=uri' // Videos EN
+  const path = user + '/videos?fields=uri'
 
   const query = {
     // GET REQUEST for all Videos with an unrated content_rating param
     method: 'GET',
-    path: pathDE,
+    path,
     query: {
       page: 1,
       per_page: 5,
@@ -64,8 +66,7 @@ filterID = (arr) => {
   return content
 }
 
-//
-function writeToFile(content, fileName) {
+writeToFile = (content, fileName) => {
   const fs = require('fs')
   fs.writeFile(__dirname + '/' + fileName, content, (err) => {
     if (err) {
