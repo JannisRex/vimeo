@@ -26,6 +26,9 @@ const basicQuery = {
   },
 }
 
+const onlyCheckTotal = true
+// if this is true, it will print totalResponses in total.txt
+
 // Queries Video ID's and writes them to result.txt
 searchVideos = () => {
   const totalResponses = 1627 // body.total in every response
@@ -33,9 +36,13 @@ searchVideos = () => {
   // TODO: create promise helper for client.request or use callback
   const pages = Math.floor(totalResponses / 100) + 1
 
-  for (let page = 1; page <= pages; page++) {
-    let query = createQuery(page)
-    searchByQuery(client, query, page)
+  if (!onlyCheckTotal) {
+    for (let page = 1; page <= pages; page++) {
+      let query = createQuery(page)
+      searchByQuery(client, query, page)
+    }
+  } else {
+    searchByQuery(client, basicQuery, 1)
   }
 }
 
@@ -55,11 +62,14 @@ searchByQuery = (client, query, page) => {
       console.log('error')
       console.log(error)
     } else {
-      const searchResponse = body.data
-      const filteredResponse = filterID(searchResponse) // Filter for ID's only
-      const formattedResponse = String(filteredResponse).replaceAll(',', ' ') // Replace Comma with Whitespace
-      writeToFile(formattedResponse, './results/result' + page + '.txt') // Writes content to File with given name
-      // writeToFile(String(body.total), './results/total.txt') // Writes count of responses to file
+      if (onlyCheckTotal) {
+        writeToFile(String(body.total), './results/total.txt') // Writes count of responses to file
+      } else {
+        const searchResponse = body.data
+        const filteredResponse = filterID(searchResponse) // Filter for ID's only
+        const formattedResponse = String(filteredResponse).replaceAll(',', ' ') // Replace Comma with Whitespace
+        writeToFile(formattedResponse, './results/result' + page + '.txt') // Writes content to File with given name
+      }
     }
 
     console.log('status code: ', statusCode) // 200 or 400/404
